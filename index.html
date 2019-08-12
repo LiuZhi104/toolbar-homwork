@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Toolbar</title>
+    <link rel="stylesheet" type="text/css" href="resources/css/ext-all.css" />
+    <!-- LIBS -->
+    <script type="text/javascript" src="adapter/ext/ext-base.js"></script>
+    <!-- ENDLIBS -->
+    <script type="text/javascript" src="ext-all.js"></script>
+    <script>
+        Ext.onReady(function() {
+            var menuItem=new Ext.menu.Item({
+                text:'Reset',
+                handler:function () {
+                    Ext.getCmp('textId').setValue('');
+                }
+            })
+            var menu=new Ext.menu.Menu({
+                items:[menuItem]
+                }
+            )
+            var table=new Ext.menu.Menu({
+                    items:[{
+                        text:'table',
+                        listeners:{
+                            'click':function (e) {
+                                var w=new Ext.Window({
+                                    width:200,
+                                    height:150,
+                                    items:new Ext.form.FormPanel({
+                                        frame: true,
+                                        layout:'column',
+                                        items:[{
+                                            xtype:'fieldset',
+                                            title:'',
+                                            items:[{
+                                                id:'columnId',
+                                                xtype: 'textfield',
+                                                height: 20,
+                                                width: 150,
+                                                fieldLabel: 'columns',
+                                            },{
+                                                id:'rowId',
+                                                xtype:'textfield',
+                                                height:20,
+                                                width:150,
+                                                fieldLabel:'rows',
+                                            }],
+                                        }],
+                                        buttons:[{
+                                            text:'add',
+                                            handler: function(b, f){
+                                                let row = Ext.getCmp('rowId').getValue()
+                                                let column = Ext.getCmp('columnId').getValue()
+                                                data = addArray(row, column)
+                                                tpl.overwrite(panel.body, data);
+                                                w.close()
+                                            }
+                                        }]
+                                    })
+                                }).show();
+
+                            }
+                        },
+                    }]
+                }
+            )
+           function addArray(row, column){
+               let resultArray = []
+               let count = 1
+               for (let i = 0; i < row; i ++) {
+                   resultArray[i]=[]
+                   for (let j = 0; j < column; j ++) {
+                       resultArray[i][j] = count
+                       count ++
+                   }
+               }
+               return resultArray
+           }
+            var memus=new Ext.menu.Menu({
+                items:[{
+                    text:'Edit',
+                    menu:menu
+                },{
+                    text:'insert',
+                    menu:table
+                }]
+            })
+
+            Ext.get(document).on('contextmenu', function(e){
+                e.preventDefault();
+                memus.showAt(e.getXY());
+            });
+            var data = []
+            var tpl = new Ext.XTemplate(
+                '<table>',
+                '<tpl for="values">',
+                '<tr>',
+                '<tpl for="values">',
+                '<td> {.} </td>',
+                '</tpl>',
+                '</tr>',
+                '</tpl>',
+                '</table>'
+            );
+
+            var toolbar=new Ext.Toolbar({
+                width:600,
+                height:50,
+                items:[{
+                    text:'Edit',
+                    menu:menu
+                },{
+                    id:'inId',
+                    text:'insert',
+                    menu:table,
+                }]
+            })
+            var panel=new Ext.Panel({
+                renderTo:'test',
+                title:'template',
+                width:800,
+                height:300,
+                tpl:tpl,
+                tbar:[toolbar],
+                items:[{
+                    xtype: 'textarea',
+                    id:'textId',
+                    enableKeyEvents: true,
+                    width:600,
+                    height:100,
+                    fieldLabel: 'Message text',
+                    hideLabel: true,
+                    name: 'msg',
+                    flex: 1,
+                    listeners: {
+                        keyup: function(src, evt){
+                            Ext.getCmp('buttonId').setDisabled(Ext.isEmpty(src.getValue()));
+                             // alert(src.getValue());
+                        }
+                    }
+
+                },{
+                    xtype:'button',
+                    id:'buttonId',
+                    text:'reply',
+                    disabled:true,
+                    handler:function (b,e) {
+                        var task = new Ext.util.DelayedTask(function(){
+                            Ext.getBody().unmask();
+                            Ext.Msg.alert('tips','success')
+                        });
+                        task.delay(3000);
+                        if(!Ext.isEmpty(Ext.getCmp('textId').getValue())){
+                           Ext.getBody().mask("提交信息中");
+                        }
+                    }
+                }],
+            })
+
+        })
+    </script>
+<body>
+<div id="test"></div>
+</body>
+</html>
