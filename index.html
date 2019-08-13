@@ -104,6 +104,18 @@
                 '</tpl>',
                 '</table>'
             );
+            var panel = new Ext.Panel({
+                renderTo:'table',
+                title: 'Table',
+                cls: 'table-panel',
+                shadow: true,
+                tpl:tpl,
+                draggable: true,
+                collapsible: true,
+                width: '60%',
+                height: 150,
+                autoScroll: true
+            })
 
             var toolbar=new Ext.Toolbar({
                 width:600,
@@ -117,12 +129,11 @@
                     menu:table,
                 }]
             })
-            var panel=new Ext.Panel({
+            var mypanel=new Ext.Panel({
                 renderTo:'test',
                 title:'template',
                 width:800,
                 height:300,
-                tpl:tpl,
                 tbar:[toolbar],
                 items:[{
                     xtype: 'textarea',
@@ -163,5 +174,6 @@
     </script>
 <body>
 <div id="test"></div>
+<div id="table"></div>
 </body>
 </html>
